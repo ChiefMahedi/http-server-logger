@@ -1,15 +1,17 @@
-import * as http from 'http';
+import express from 'express';
 import Logger from './Logger/Logger';
 
+const app = express();
 const logger = new Logger('access.log');
 
-const server = http.createServer((req, res) => {
-    logger.log(`${req.method} ${req.url}`);
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello World\n');
+app.get('/test',(req, res) => {
+    const ipAddress = req.ip;
+    logger.log(`${req.method} ${req.url}`, ipAddress);
+    res.send('Logger running');
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
