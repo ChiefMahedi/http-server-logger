@@ -6,8 +6,8 @@ export default class Logger {
     constructor(logFilePath: string) {
         this.logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
     }
-    log(message: string): void {
-        const logEntry = `${new Date().toISOString()} - ${message}\n`;
+    log(message: string, ipAddress: string): void {
+        const logEntry = `${new Date().toISOString()} - ${message} - from ${ipAddress}\n`;
         this.logStream.write(logEntry);
     }
 }
