@@ -1,13 +1,46 @@
 import * as fs from 'fs';
-import LogObject from './LogObject';
+
+export enum LogLevel {
+    DEBUG = 'DEBUG',
+    INFO = 'INFO',
+    WARN = 'WARN',
+    ERROR = 'ERROR',
+}
+interface LogOptions {
+    logLevel: LogLevel;
+    logFilePath: string;
+}
+
 export default class Logger {
     private logStream: fs.WriteStream;
+    private logLevel: LogLevel;
 
-    constructor(logFilePath: string) {
-        this.logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
+    constructor(options: LogOptions) {
+        this.logStream = fs.createWriteStream(options.logFilePath, { flags: 'a' });
+        this.logLevel = options.logLevel;
     }
-    log(logObject: LogObject): void {
-        const logEntry = `${new Date().toISOString()} - ${logObject.message} - from ${logObject.ipAddress}\n`;
-        this.logStream.write(logEntry);
+
+    private log(message: string, level: LogLevel): void {
+            const logEntry = `${new Date().toISOString()} [${level}] - ${message}\n`;
+            this.logStream.write(logEntry);
+    }
+    debug(message: string): void {
+        this.log(message, LogLevel.DEBUG);
+    }
+
+    info(message: string): void {
+        this.log(message, LogLevel.INFO);
+    }
+
+    warn(message: string): void {
+        this.log(message, LogLevel.WARN);
+    }
+
+    error(message: string): void {
+        this.log(message, LogLevel.ERROR);
+    }
+    
+    close(): void {
+        this.logStream.end();
     }
 }
